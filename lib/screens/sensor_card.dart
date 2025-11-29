@@ -16,18 +16,56 @@ class SensorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: Container(
+        padding: const EdgeInsets.all(14.0),
+        child: Row(
           children: [
-            Icon(icon, size: 40, color: color),
-            const SizedBox(height: 8),
-            Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-            const SizedBox(height: 4),
-            Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            // icon circle
+            Container(
+              width: 58,
+              height: 58,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  color.withAlpha((0.95 * 255).round()),
+                  color.withAlpha((0.6 * 255).round())
+                ]),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                      color: color.withAlpha((0.18 * 255).round()),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4))
+                ],
+              ),
+              child: Icon(icon, size: 28, color: Colors.white),
+            ),
+            const SizedBox(width: 12),
+            // values
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(title,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurface
+                              .withAlpha((0.8 * 255).round()))),
+                  const SizedBox(height: 6),
+                  Text(value,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                          fontSize: 18, fontWeight: FontWeight.w700)),
+                ],
+              ),
+            ),
+            // small chevron action
+            Icon(Icons.chevron_right,
+                color:
+                    theme.colorScheme.onSurface.withAlpha((0.4 * 255).round())),
           ],
         ),
       ),

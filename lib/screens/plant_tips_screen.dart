@@ -7,10 +7,10 @@ class PlantTipsScreen extends StatefulWidget {
   const PlantTipsScreen({super.key});
 
   @override
-  _PlantTipsScreenState createState() => _PlantTipsScreenState();
+  PlantTipsScreenState createState() => PlantTipsScreenState();
 }
 
-class _PlantTipsScreenState extends State<PlantTipsScreen> {
+class PlantTipsScreenState extends State<PlantTipsScreen> {
   final _searchController = TextEditingController();
   Plant? _selectedPlant;
   bool _isLoading = false;

@@ -10,10 +10,13 @@ class ForgotPasswordScreen extends StatefulWidget {
   _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
+    with SingleTickerProviderStateMixin {
   final _emailController = TextEditingController();
   bool _isLoading = false;
   bool _emailSent = false;
+  late final AnimationController _animController;
+  late final Animation<double> _anim;
 
   Future<void> _resetPassword() async {
     if (_emailController.text.isEmpty) {
@@ -37,45 +40,90 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 360));
+    _anim = CurvedAnimation(parent: _animController, curve: Curves.easeOutBack);
+    _animController.forward();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Recuperar Senha')),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            if (!_emailSent) ...[
-              const Text(
-                  'Digite seu email para receber um link de recuperação'),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 36),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: ScaleTransition(
+              scale: _anim,
+              child: FadeTransition(
+                opacity: _anim,
+                child: Card(
+                  elevation: 6,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text('Recuperar Senha',
+                            style: Theme.of(context).textTheme.headlineSmall),
+                        const SizedBox(height: 8),
+                        if (!_emailSent) ...[
+                          Text(
+                              'Digite seu email para receber um link de recuperação',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          const SizedBox(height: 14),
+                          TextField(
+                            controller: _emailController,
+                            decoration: const InputDecoration(
+                                prefixIcon: Icon(Icons.email),
+                                labelText: 'Email'),
+                          ),
+                          const SizedBox(height: 18),
+                          _isLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : SizedBox(
+                                  height: 50,
+                                  child: ElevatedButton(
+                                      onPressed: _resetPassword,
+                                      child: const Text('Enviar Link')),
+                                ),
+                        ] else ...[
+                          const Icon(Icons.check_circle,
+                              color: Colors.green, size: 92),
+                          const SizedBox(height: 12),
+                          Text('Email enviado com sucesso!',
+                              style: Theme.of(context).textTheme.headlineSmall),
+                          const SizedBox(height: 6),
+                          Text('Verifique sua caixa de entrada.',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          const SizedBox(height: 18),
+                          Align(
+                              alignment: Alignment.center,
+                              child: TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Voltar ao Login'))),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: _resetPassword,
-                      child: const Text('Enviar Link'),
-                    ),
-            ] else ...[
-              const Icon(Icons.check_circle, color: Colors.green, size: 80),
-              const SizedBox(height: 20),
-              const Text('Email enviado com sucesso!'),
-              const Text('Verifique sua caixa de entrada.'),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Voltar ao Login'),
-              ),
-            ],
-          ],
+            ),
+          ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
   }
 }

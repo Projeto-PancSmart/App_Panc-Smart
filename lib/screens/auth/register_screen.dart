@@ -12,13 +12,16 @@ class RegisterScreen extends StatefulWidget {
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends State<RegisterScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
+  late final AnimationController _animController;
+  late final Animation<double> _anim;
 
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
@@ -66,71 +69,130 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 360));
+    _anim = CurvedAnimation(parent: _animController, curve: Curves.easeOutBack);
+    _animController.forward();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Criar Conta')),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nome Completo'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, insira seu nome';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, insira seu email';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Senha'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, insira uma senha';
-                  }
-                  if (value.length < 6) {
-                    return 'A senha deve ter pelo menos 6 caracteres';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Confirmar Senha'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, confirme sua senha';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: _register,
-                      child: const Text('Criar Conta'),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 36),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: ScaleTransition(
+              scale: _anim,
+              child: FadeTransition(
+                opacity: _anim,
+                child: Card(
+                  elevation: 6,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text('Criar Conta',
+                              style: theme.textTheme.headlineSmall),
+                          const SizedBox(height: 8),
+                          Text(
+                              'Crie sua conta para gerenciar sua estufa com eficiência',
+                              style: theme.textTheme.bodySmall),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _nameController,
+                            decoration: const InputDecoration(
+                                labelText: 'Nome Completo',
+                                prefixIcon: Icon(Icons.person)),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor, insira seu nome';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          TextFormField(
+                            controller: _emailController,
+                            decoration: const InputDecoration(
+                                labelText: 'Email',
+                                prefixIcon: Icon(Icons.email)),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor, insira seu email';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                                labelText: 'Senha',
+                                prefixIcon: Icon(Icons.lock)),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor, insira uma senha';
+                              }
+                              if (value.length < 6) {
+                                return 'A senha deve ter pelo menos 6 caracteres';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          TextFormField(
+                            controller: _confirmPasswordController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                                labelText: 'Confirmar Senha',
+                                prefixIcon: Icon(Icons.lock_outline)),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor, confirme sua senha';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 18),
+                          _isLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : SizedBox(
+                                  height: 50,
+                                  child: ElevatedButton(
+                                    onPressed: _register,
+                                    child: const Text('Criar Conta',
+                                        style: TextStyle(fontSize: 16)),
+                                  ),
+                                ),
+                        ],
+                      ),
                     ),
-            ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
   }
 }

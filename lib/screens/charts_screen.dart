@@ -10,65 +10,99 @@ class ChartsScreen extends StatefulWidget {
   const ChartsScreen({super.key});
 
   @override
-  _ChartsScreenState createState() => _ChartsScreenState();
+  ChartsScreenState createState() => ChartsScreenState();
 }
 
-class _ChartsScreenState extends State<ChartsScreen> {
+class ChartsScreenState extends State<ChartsScreen> {
   String _selectedChart = 'temperature';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Gráficos dos Sensores')),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: DropdownButton<String>(
-              value: _selectedChart,
-              onChanged: (String? newValue) {
-                setState(() => _selectedChart = newValue!);
-              },
-              items: <String>[
-                'temperature',
-                'humidity',
-                'soilMoisture',
-                'waterLevel'
-              ].map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(_getChartTitle(value)),
-                );
-              }).toList(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            // header control
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Selecione o sensor',
+                        style: Theme.of(context).textTheme.bodyMedium),
+                    DropdownButton<String>(
+                      value: _selectedChart,
+                      onChanged: (String? newValue) {
+                        setState(() => _selectedChart = newValue!);
+                      },
+                      items: <String>[
+                        'temperature',
+                        'humidity',
+                        'soilMoisture',
+                        'waterLevel'
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(_getChartTitle(value)),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: Provider.of<FirebaseService>(context).getSensorHistory(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(child: Text('Erro: ${snapshot.error}'));
-                }
 
-                if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+            const SizedBox(height: 12),
 
-                final data = snapshot.data!.docs
-                    .map((doc) =>
-                        SensorData.fromMap(doc.data() as Map<String, dynamic>))
-                    .toList()
-                    .reversed
-                    .toList();
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream:
+                    Provider.of<FirebaseService>(context).getSensorHistory(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Erro: ${snapshot.error}'));
+                  }
 
-                return Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: _buildLineChart(data),
-                );
-              },
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final data = snapshot.data!.docs
+                      .map((doc) => SensorData.fromMap(
+                          doc.data() as Map<String, dynamic>))
+                      .toList()
+                      .reversed
+                      .toList();
+
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    elevation: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(_getChartTitle(_selectedChart),
+                              style: Theme.of(context).textTheme.headlineSmall),
+                          const SizedBox(height: 12),
+                          Expanded(child: _buildLineChart(data)),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

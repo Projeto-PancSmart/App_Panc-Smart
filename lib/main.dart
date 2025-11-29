@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'screens/auth/login_screen.dart';
+import 'theme/app_theme.dart';
 import 'services/auth_service.dart';
 import 'services/firebase_service.dart';
 import 'services/plant_service.dart';
@@ -10,7 +11,7 @@ import 'services/plant_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform, 
+    options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const GreenhouseApp());
 }
@@ -27,11 +28,8 @@ class GreenhouseApp extends StatelessWidget {
         Provider<PlantService>(create: (_) => PlantService()),
       ],
       child: MaterialApp(
-        title: 'Sistema de Estufa Inteligente',
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
+        title: 'Panc Smart',
+        theme: AppTheme.lightTheme,
         home: const LoginScreen(),
         debugShowCheckedModeBanner: false,
       ),

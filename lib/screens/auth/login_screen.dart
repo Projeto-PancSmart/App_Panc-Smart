@@ -50,85 +50,135 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.eco, size: 80, color: Colors.green),
-              const SizedBox(height: 20),
-              const Text('Sistema de Estufa',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 40),
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, insira seu email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Senha',
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, insira sua senha';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: _login,
-                        child: const Text('Entrar'),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(22.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Brand / header
+                      Row(
+                        children: [
+                          Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(Icons.eco,
+                                color: Colors.white, size: 32),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Panc Smart',
+                                    style: theme.textTheme.headlineSmall),
+                                const SizedBox(height: 4),
+                                Text(
+                                    'Bem-vindo — monitore sua estufa com eficiência',
+                                    style: theme.textTheme.bodySmall),
+                              ],
+                            ),
+                          )
+                        ],
                       ),
-                    ),
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ForgotPasswordScreen()),
-                  );
-                },
-                child: const Text('Esqueci minha senha'),
+
+                      const SizedBox(height: 20),
+
+                      // Form fields
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.email), labelText: 'Email'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor, insira seu email';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.lock), labelText: 'Senha'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor, insira sua senha';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 18),
+
+                      _isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : SizedBox(
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: _login,
+                                child: const Text('Entrar',
+                                    style: TextStyle(fontSize: 16)),
+                              ),
+                            ),
+
+                      const SizedBox(height: 10),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (c) => const RegisterScreen())),
+                            child: const Text('Criar conta'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (c) =>
+                                        const ForgotPasswordScreen())),
+                            child: const Text('Esqueci minha senha'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RegisterScreen()),
-                  );
-                },
-                child: const Text('Criar conta'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // no animations currently — keep dispose for controllers if added later
+    super.dispose();
   }
 }
