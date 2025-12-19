@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/firebase_service.dart';
+import '../utils/responsive.dart';
 import '../models/sensor_data.dart';
 import './sensor_card.dart';
-import './controls/water_pump_control.dart';
-import './controls/sensor_control.dart';
-import './controls/lcd_control.dart';
-import './controls/led_control.dart';
+import 'controls/water_pump_control.dart';
 import './charts_screen.dart';
 import './settings_screen.dart';
 import './plant_tips_screen.dart';
@@ -19,9 +17,16 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Estufa Inteligente'),
+        titleTextStyle: TextStyle(
+          fontSize: Responsive.fontSize(context, 18),
+          fontWeight: FontWeight.w600,
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: Icon(
+              Icons.settings,
+              size: Responsive.fontSize(context, 24),
+            ),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const SettingsScreen()),
@@ -49,37 +54,44 @@ class HomeScreen extends StatelessWidget {
           final size = MediaQuery.of(context).size;
           final width = size.width;
 
-          // Responsive columns based on width
-          int columns = 2;
-          if (width < 600) {
-            columns = 1;
-          } else if (width < 1000) {
-            columns = 2;
-          } else if (width < 1400) {
-            columns = 3;
+          // Responsive columns based on breakpoints
+          int columns;
+          if (Responsive.isPhone(context)) {
+            columns = 2; // Celular: 2 colunas
+          } else if (Responsive.isTablet(context)) {
+            columns = 3; // Tablet: 3 colunas
           } else {
-            columns = 4;
+            columns = 4; // Desktop: 4 colunas
           }
 
-          // Build a scrollable layout with an attractive header and responsive grid
+          final spacing = Responsive.scale(context, 12);
+          final horizontalPadding = Responsive.scale(context, 16);
+          
+          // Cálculo da largura do card
+          final usableWidth = width - (horizontalPadding * 2);
+          final totalSpacing = spacing * (columns - 1);
+          final cardWidth = (usableWidth - totalSpacing) / columns;
+
           return SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(Responsive.scale(context, 16)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Header / hero
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(Responsive.scale(context, 20)),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withAlpha((0.8 * 255).round()),
-                      ], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context).colorScheme.primary
+                              .withAlpha((0.8 * 255).round()),
+                        ], 
+                        begin: Alignment.topLeft, 
+                        end: Alignment.bottomRight
+                      ),
+                      borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withAlpha((0.08 * 255).round()),
@@ -88,123 +100,232 @@ class HomeScreen extends StatelessWidget {
                         )
                       ],
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        if (Responsive.isPhone(context)) {
+                          return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Bem-vindo de volta',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(color: Colors.white70)),
-                              const SizedBox(height: 8),
-                              Text('Painel da Estufa',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(color: Colors.white)),
-                              const SizedBox(height: 12),
-                              Text(
-                                  'Destaques de sustentabilidade e eficiência.',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.copyWith(color: Colors.white70)),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Bem-vindo de volta',
+                                    style: TextStyle(
+                                      fontSize: Responsive.fontSize(context, 14),
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                  SizedBox(height: Responsive.scale(context, 8)),
+                                  Text(
+                                    'Painel da Estufa',
+                                    style: TextStyle(
+                                      fontSize: Responsive.fontSize(context, 24),
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(height: Responsive.scale(context, 12)),
+                                  Text(
+                                    'Destaques de sustentabilidade e eficiência.',
+                                    style: TextStyle(
+                                      fontSize: Responsive.fontSize(context, 14),
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: Responsive.scale(context, 16)),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.eco,
+                                    size: Responsive.fontSize(context, 36),
+                                    color: Colors.white
+                                        .withAlpha((0.95 * 255).round())
+                                  ),
+                                  SizedBox(width: Responsive.scale(context, 12)),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: Responsive.scale(context, 12),
+                                      vertical: Responsive.scale(context, 6),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white24,
+                                      borderRadius: BorderRadius.circular(8)
+                                    ),
+                                    child: Text(
+                                      'Sustentável',
+                                      style: TextStyle(
+                                        fontSize: Responsive.fontSize(context, 14),
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        // small status indicators
-                        Column(
+                          );
+                        }
+
+                        // Layout para tablets/desktops
+                        return Row(
                           children: [
-                            Icon(Icons.eco,
-                                size: 42,
-                                color: Colors.white
-                                    .withAlpha((0.95 * 255).round())),
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                  color: Colors.white24,
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: const Text('Sustentável',
-                                  style: TextStyle(color: Colors.white)),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Bem-vindo de volta',
+                                    style: TextStyle(
+                                      fontSize: Responsive.fontSize(context, 16),
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                  SizedBox(height: Responsive.scale(context, 8)),
+                                  Text(
+                                    'Painel da Estufa',
+                                    style: TextStyle(
+                                      fontSize: Responsive.fontSize(context, 28),
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(height: Responsive.scale(context, 12)),
+                                  Text(
+                                    'Destaques de sustentabilidade e eficiência.',
+                                    style: TextStyle(
+                                      fontSize: Responsive.fontSize(context, 16),
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+                            SizedBox(width: Responsive.scale(context, 20)),
+                            Column(
+                              children: [
+                                Icon(
+                                  Icons.eco,
+                                  size: Responsive.fontSize(context, 48),
+                                  color: Colors.white
+                                      .withAlpha((0.95 * 255).round())
+                                ),
+                                SizedBox(height: Responsive.scale(context, 12)),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: Responsive.scale(context, 16),
+                                    vertical: Responsive.scale(context, 8),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white24,
+                                    borderRadius: BorderRadius.circular(8)
+                                  ),
+                                  child: Text(
+                                    'Sustentável',
+                                    style: TextStyle(
+                                      fontSize: Responsive.fontSize(context, 16),
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
                           ],
-                        )
-                      ],
+                        );
+                      },
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: Responsive.scale(context, 24)),
 
-                  // Summary cards (quick glance)
+                  // Summary cards
                   Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
+                    spacing: Responsive.scale(context, 12),
+                    runSpacing: Responsive.scale(context, 12),
                     children: [
                       SizedBox(
-                        width: width < 600
+                        width: Responsive.isPhone(context)
                             ? double.infinity
-                            : (width / columns) - 24,
+                            : cardWidth,
                         child: Card(
                           child: Padding(
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(Responsive.scale(context, 16)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Uso de Água',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium),
-                                    const SizedBox(height: 6),
-                                    Text('Moderado',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineSmall
-                                            ?.copyWith(fontSize: 14)),
-                                  ],
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Uso de Água',
+                                        style: TextStyle(
+                                          fontSize: Responsive.fontSize(context, 14),
+                                          color: Colors.grey[700],
+                                        ),
+                                      ),
+                                      SizedBox(height: Responsive.scale(context, 6)),
+                                      Text(
+                                        'Moderado',
+                                        style: TextStyle(
+                                          fontSize: Responsive.fontSize(context, 18),
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.blue[800],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                const Icon(Icons.water_drop,
-                                    size: 36, color: Colors.blueAccent),
+                                Icon(
+                                  Icons.water_drop,
+                                  size: Responsive.fontSize(context, 40), 
+                                  color: Colors.blueAccent
+                                ),
                               ],
                             ),
                           ),
                         ),
                       ),
                       SizedBox(
-                        width: width < 600
+                        width: Responsive.isPhone(context)
                             ? double.infinity
-                            : (width / columns) - 24,
+                            : cardWidth,
                         child: Card(
                           child: Padding(
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(Responsive.scale(context, 16)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Eficiência',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium),
-                                    const SizedBox(height: 6),
-                                    Text('Ótima',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineSmall
-                                            ?.copyWith(fontSize: 14)),
-                                  ],
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Eficiência',
+                                        style: TextStyle(
+                                          fontSize: Responsive.fontSize(context, 14),
+                                          color: Colors.grey[700],
+                                        ),
+                                      ),
+                                      SizedBox(height: Responsive.scale(context, 6)),
+                                      Text(
+                                        'Ótima',
+                                        style: TextStyle(
+                                          fontSize: Responsive.fontSize(context, 18),
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.green[800],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                const Icon(Icons.energy_savings_leaf,
-                                    size: 36, color: Colors.green),
+                                Icon(
+                                  Icons.energy_savings_leaf,
+                                  size: Responsive.fontSize(context, 40), 
+                                  color: Colors.green
+                                ),
                               ],
                             ),
                           ),
@@ -213,15 +334,17 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 18),
+                  SizedBox(height: Responsive.scale(context, 24)),
 
-                  // Responsive Grid
+                  // Responsive Grid - Ajustado para evitar overflow
                   GridView.count(
                     crossAxisCount: columns,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
+                    crossAxisSpacing: spacing,
+                    mainAxisSpacing: spacing,
+                    // Ajustado para melhor proporção e evitar overflow
+                    childAspectRatio: Responsive.isPhone(context) ? 0.85 : 1.0,
                     children: [
                       SensorCard(
                         title: 'Temperatura',
@@ -256,6 +379,7 @@ class HomeScreen extends StatelessWidget {
                         color:
                             sensorData.isRaining ? Colors.blue : Colors.orange,
                       ),
+                      // Card da Bomba de Água
                       _buildControlCard(
                         context,
                         'Bomba de Água',
@@ -263,27 +387,7 @@ class HomeScreen extends StatelessWidget {
                         Colors.blue,
                         const WaterPumpControlScreen(),
                       ),
-                      _buildControlCard(
-                        context,
-                        'Sensores',
-                        Icons.sensors,
-                        Colors.green,
-                        const SensorControlScreen(),
-                      ),
-                      _buildControlCard(
-                        context,
-                        'Display LCD',
-                        Icons.tv,
-                        Colors.purple,
-                        const LcdControlScreen(),
-                      ),
-                      _buildControlCard(
-                        context,
-                        'LED',
-                        Icons.lightbulb,
-                        Colors.yellow,
-                        const LedControlScreen(),
-                      ),
+                      // Card de Gráficos
                       _buildActionCard(
                         context,
                         'Gráficos',
@@ -291,6 +395,7 @@ class HomeScreen extends StatelessWidget {
                         Colors.red,
                         const ChartsScreen(),
                       ),
+                      // Card de Dicas de Plantas
                       _buildActionCard(
                         context,
                         'Dicas Plantas',
@@ -313,15 +418,50 @@ class HomeScreen extends StatelessWidget {
       Color color, Widget screen) {
     return Card(
       child: InkWell(
+        borderRadius: BorderRadius.circular(12),
         onTap: () => Navigator.push(
             context, MaterialPageRoute(builder: (context) => screen)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: color),
-            const SizedBox(height: 8),
-            Text(title, textAlign: TextAlign.center),
-          ],
+        child: Padding(
+          padding: EdgeInsets.all(Responsive.scale(context, 12)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(Responsive.scale(context, 8)),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon, 
+                  size: Responsive.fontSize(context, 24), 
+                  color: color
+                ),
+              ),
+              SizedBox(height: Responsive.scale(context, 8)),
+              Text(
+                title, 
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: Responsive.fontSize(context, 14),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: Responsive.scale(context, 4)),
+              Text(
+                'Controle',
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: Responsive.fontSize(context, 12),
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -331,15 +471,50 @@ class HomeScreen extends StatelessWidget {
       Color color, Widget screen) {
     return Card(
       child: InkWell(
+        borderRadius: BorderRadius.circular(12),
         onTap: () => Navigator.push(
             context, MaterialPageRoute(builder: (context) => screen)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: color),
-            const SizedBox(height: 8),
-            Text(title, textAlign: TextAlign.center),
-          ],
+        child: Padding(
+          padding: EdgeInsets.all(Responsive.scale(context, 12)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(Responsive.scale(context, 8)),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon, 
+                  size: Responsive.fontSize(context, 24), 
+                  color: color
+                ),
+              ),
+              SizedBox(height: Responsive.scale(context, 8)),
+              Text(
+                title, 
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: Responsive.fontSize(context, 14),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: Responsive.scale(context, 4)),
+              Text(
+                'Visualizar',
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: Responsive.fontSize(context, 12),
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

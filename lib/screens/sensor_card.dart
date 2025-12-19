@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/responsive.dart';
 
 class SensorCard extends StatelessWidget {
   final String title;
@@ -16,56 +17,56 @@ class SensorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      child: Container(
-        padding: const EdgeInsets.all(14.0),
-        child: Row(
+      child: Padding(
+        padding: EdgeInsets.all(Responsive.scale(context, 12)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // icon circle
+            // Ícone com fundo circular
             Container(
-              width: 58,
-              height: 58,
+              padding: EdgeInsets.all(Responsive.scale(context, 8)),
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  color.withAlpha((0.95 * 255).round()),
-                  color.withAlpha((0.6 * 255).round())
-                ]),
+                color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                      color: color.withAlpha((0.18 * 255).round()),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4))
-                ],
               ),
-              child: Icon(icon, size: 28, color: Colors.white),
-            ),
-            const SizedBox(width: 12),
-            // values
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(title,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurface
-                              .withAlpha((0.8 * 255).round()))),
-                  const SizedBox(height: 6),
-                  Text(value,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                          fontSize: 18, fontWeight: FontWeight.w700)),
-                ],
+              child: Icon(
+                icon,
+                size: Responsive.fontSize(context, 24),
+                color: color,
               ),
             ),
-            // small chevron action
-            Icon(Icons.chevron_right,
-                color:
-                    theme.colorScheme.onSurface.withAlpha((0.4 * 255).round())),
+            
+            SizedBox(height: Responsive.scale(context, 8)),
+            
+            // Título - com overflow controlado
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: Responsive.fontSize(context, 12),
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[700],
+              ),
+            ),
+            
+            SizedBox(height: Responsive.scale(context, 4)),
+            
+            // Valor - com overflow controlado
+            Text(
+              value,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: Responsive.fontSize(context, 16),
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
           ],
         ),
       ),

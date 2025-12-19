@@ -10,9 +10,15 @@ import 'services/plant_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+  } on FirebaseException catch (e) {  
+    if (e.code != 'duplicate-app') rethrow;
+  }
   runApp(const GreenhouseApp());
 }
 
@@ -27,11 +33,20 @@ class GreenhouseApp extends StatelessWidget {
         Provider<FirebaseService>(create: (_) => FirebaseService()),
         Provider<PlantService>(create: (_) => PlantService()),
       ],
-      child: MaterialApp(
+      child: MaterialApp( 
         title: 'Panc Smart',
         theme: AppTheme.lightTheme,
         home: const LoginScreen(),
         debugShowCheckedModeBanner: false,
+        // ADICIONE ESTE BUILDER PARA RESPONSIVIDADE
+        builder: (context, child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaleFactor: MediaQuery.textScaleFactorOf(context).clamp(0.8, 1.5),
+            ),
+            child: child!,
+          );
+        },
       ),
     );
   }

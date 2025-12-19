@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import '../../services/auth_service.dart';
-// removed unused import of local User model
+import '../../utils/responsive.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -82,12 +82,29 @@ class _RegisterScreenState extends State<RegisterScreen>
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Criar Conta')),
+      appBar: AppBar(
+        title: const Text('Criar Conta'),
+        // ADICIONADO: título responsivo
+        titleTextStyle: TextStyle(
+          fontSize: Responsive.fontSize(context, 18),
+          fontWeight: FontWeight.w600,
+        ),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 36),
+        // CORRIGIDO: padding responsivo
+        padding: EdgeInsets.symmetric(
+          horizontal: Responsive.isPhone(context) 
+              ? Responsive.scale(context, 20) 
+              : Responsive.scale(context, 40),
+          vertical: Responsive.scale(context, 36),
+        ),
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
+            constraints: BoxConstraints(
+              maxWidth: Responsive.isPhone(context) 
+                  ? double.infinity 
+                  : Responsive.scale(context, 560),
+            ),
             child: ScaleTransition(
               scale: _anim,
               child: FadeTransition(
@@ -95,26 +112,58 @@ class _RegisterScreenState extends State<RegisterScreen>
                 child: Card(
                   elevation: 6,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    // CORRIGIDO: padding interno responsivo
+                    padding: EdgeInsets.all(Responsive.scale(context, 24)),
                     child: Form(
                       key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('Criar Conta',
-                              style: theme.textTheme.headlineSmall),
-                          const SizedBox(height: 8),
+                          // TÍTULO RESPONSIVO
                           Text(
-                              'Crie sua conta para gerenciar sua estufa com eficiência',
-                              style: theme.textTheme.bodySmall),
-                          const SizedBox(height: 16),
+                            'Criar Conta',
+                            style: TextStyle(
+                              fontSize: Responsive.fontSize(context, 24),
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          
+                          Responsive.vGap(context, 8),
+                          
+                          // SUBTÍTULO RESPONSIVO
+                          Text(
+                            'Crie sua conta para gerenciar sua estufa com eficiência',
+                            style: TextStyle(
+                              fontSize: Responsive.fontSize(context, 14),
+                              color: Colors.grey[700],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          
+                          Responsive.vGap(context, 24),
+                          
+                          // CAMPO NOME RESPONSIVO
                           TextFormField(
                             controller: _nameController,
-                            decoration: const InputDecoration(
-                                labelText: 'Nome Completo',
-                                prefixIcon: Icon(Icons.person)),
+                            decoration: InputDecoration(
+                              labelText: 'Nome Completo',
+                              prefixIcon: const Icon(Icons.person),
+                              // ADICIONADO: estilos responsivos
+                              labelStyle: TextStyle(
+                                fontSize: Responsive.fontSize(context, 14),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: Responsive.scale(context, 12),
+                                vertical: Responsive.scale(context, 14),
+                              ),
+                            ),
+                            style: TextStyle(
+                              fontSize: Responsive.fontSize(context, 16),
+                            ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Por favor, insira seu nome';
@@ -122,12 +171,26 @@ class _RegisterScreenState extends State<RegisterScreen>
                               return null;
                             },
                           ),
-                          const SizedBox(height: 12),
+                          
+                          Responsive.vGap(context, 16),
+                          
+                          // CAMPO EMAIL RESPONSIVO
                           TextFormField(
                             controller: _emailController,
-                            decoration: const InputDecoration(
-                                labelText: 'Email',
-                                prefixIcon: Icon(Icons.email)),
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                              prefixIcon: const Icon(Icons.email),
+                              labelStyle: TextStyle(
+                                fontSize: Responsive.fontSize(context, 14),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: Responsive.scale(context, 12),
+                                vertical: Responsive.scale(context, 14),
+                              ),
+                            ),
+                            style: TextStyle(
+                              fontSize: Responsive.fontSize(context, 16),
+                            ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Por favor, insira seu email';
@@ -135,13 +198,27 @@ class _RegisterScreenState extends State<RegisterScreen>
                               return null;
                             },
                           ),
-                          const SizedBox(height: 12),
+                          
+                          Responsive.vGap(context, 16),
+                          
+                          // CAMPO SENHA RESPONSIVO
                           TextFormField(
                             controller: _passwordController,
                             obscureText: true,
-                            decoration: const InputDecoration(
-                                labelText: 'Senha',
-                                prefixIcon: Icon(Icons.lock)),
+                            decoration: InputDecoration(
+                              labelText: 'Senha',
+                              prefixIcon: const Icon(Icons.lock),
+                              labelStyle: TextStyle(
+                                fontSize: Responsive.fontSize(context, 14),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: Responsive.scale(context, 12),
+                                vertical: Responsive.scale(context, 14),
+                              ),
+                            ),
+                            style: TextStyle(
+                              fontSize: Responsive.fontSize(context, 16),
+                            ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Por favor, insira uma senha';
@@ -152,13 +229,27 @@ class _RegisterScreenState extends State<RegisterScreen>
                               return null;
                             },
                           ),
-                          const SizedBox(height: 12),
+                          
+                          Responsive.vGap(context, 16),
+                          
+                          // CAMPO CONFIRMAR SENHA RESPONSIVO
                           TextFormField(
                             controller: _confirmPasswordController,
                             obscureText: true,
-                            decoration: const InputDecoration(
-                                labelText: 'Confirmar Senha',
-                                prefixIcon: Icon(Icons.lock_outline)),
+                            decoration: InputDecoration(
+                              labelText: 'Confirmar Senha',
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              labelStyle: TextStyle(
+                                fontSize: Responsive.fontSize(context, 14),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: Responsive.scale(context, 12),
+                                vertical: Responsive.scale(context, 14),
+                              ),
+                            ),
+                            style: TextStyle(
+                              fontSize: Responsive.fontSize(context, 16),
+                            ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Por favor, confirme sua senha';
@@ -166,17 +257,38 @@ class _RegisterScreenState extends State<RegisterScreen>
                               return null;
                             },
                           ),
-                          const SizedBox(height: 18),
+                          
+                          Responsive.vGap(context, 24),
+                          
+                          // BOTÃO RESPONSIVO
                           _isLoading
                               ? const Center(child: CircularProgressIndicator())
                               : SizedBox(
-                                  height: 50,
+                                  height: Responsive.scale(context, 52),
                                   child: ElevatedButton(
                                     onPressed: _register,
-                                    child: const Text('Criar Conta',
-                                        style: TextStyle(fontSize: 16)),
+                                    child: Text(
+                                      'Criar Conta', 
+                                      style: TextStyle(
+                                        fontSize: Responsive.fontSize(context, 16),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ),
                                 ),
+                          
+                          Responsive.vGap(context, 16),
+                          
+                          // LINK VOLTAR RESPONSIVO
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              'Já tem uma conta? Entrar',
+                              style: TextStyle(
+                                fontSize: Responsive.fontSize(context, 14),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -193,6 +305,10 @@ class _RegisterScreenState extends State<RegisterScreen>
   @override
   void dispose() {
     _animController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 }

@@ -19,4 +19,13 @@ class Plant {
       careInstructions: Map<String, dynamic>.from(map['careInstructions'] ?? {}),
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'scientificName': scientificName,
+      'description': description,
+      'careInstructions': careInstructions,
+    };
+  }
 }
